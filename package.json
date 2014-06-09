@@ -1,0 +1,15 @@
+{
+  "name": "printsmart-agent",
+  "version": "0.0.1",
+  "licenses": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/scbd/printsmart-agent"
+  },
+  "dependencies": {
+    "event-stream": "^3.1.5",
+    "superagent": "^0.18.0",
+    "tmp": "0.0.23",
+    "when": "^3.2.2"
+  }
+}
