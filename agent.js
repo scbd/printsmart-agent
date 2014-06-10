@@ -102,6 +102,7 @@ function convertToPS(filePath, outputPath) {
 function prepare(inputPath, outputPath, message) {
 
     var deferred = when.defer();
+    var page = 0;
 
     var rStream = fs.createReadStream(inputPath, { encoding: 'utf8' });
     var wStream = fs.createWriteStream(outputPath);
@@ -119,7 +120,9 @@ function prepare(inputPath, outputPath, message) {
             line += '%%EndSetup'
         }
 
-        if(line=='%%Page: 1 1') {
+        if(line=='%%Page: 1 1') page = 1;
+
+        if(line=='showpage' && page==1) {
 
             function escape (text) { return text.replace(/\\/, '\\\\').replace(/\(/, '\\(').replace(/\)/, '\\)'); }
 
@@ -143,6 +146,8 @@ function prepare(inputPath, outputPath, message) {
             line += '/Helvetica-Bold findfont 24 scalefont setfont\n';
             line += 'currentpagedevice /PageSize get aload pop exch pop 30 sub 440 exch moveto\n';
             line += '('+escape(message.box)+') true charpath 1 setlinewidth 0.0 setgray stroke\n';
+
+            line += 'showpage';
         }
 
         return line + '\n';
