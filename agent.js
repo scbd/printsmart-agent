@@ -121,6 +121,7 @@ function prepare(inputPath, outputPath, message) {
         }
 
         if(line=='%%Page: 1 1') page = 1;
+        if(line=='%%Page: 2 2') page = 2;
 
         if(line=='showpage' && page==1) {
 
