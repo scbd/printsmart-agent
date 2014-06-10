@@ -170,7 +170,7 @@ function print(filepath, message) {
 
     var title = message.box + ': ' + message.symbol + ' (' + message.language + ') - ' + message.name;
 
-    var ls = processx.spawn('lp', [filepath, '-t', title]);
+    var ls = processx.spawn('lp', ['-o raw', filepath, '-t', title]);
 
     ls.stdout.on('data', function (data) { console.log('stdout: ' + data); });
     ls.stderr.on('data', function (data) { console.log('stderr: ' + data); });
