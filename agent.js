@@ -6,57 +6,51 @@ var nodefn   = require('when/node/function');
 var es       = require('event-stream');
 var request  = require('superagent');
 
-var message = {
-    id: '5395D9-E9915C46C8-72B4C9E2',
-    url: 'http://www.cbd.int/doc/meetings/abs/absws-2014-06/other/absws-2014-06-info-note-en.pdf',
-    symbol: 'UNEP/CBD/ABS/WS/2014/6/1',
-    language: 'EN',
-    name: 'John Smith - France',
-    box: '0021'
-}
+function AgentClass() {
 
-processMessage(message);
+    //============================================================
+    //
+    //
+    //============================================================
+    this.processMessage = function processMessage(message) {
 
-//============================================================
-//
-//
-//============================================================
-function processMessage(message) {
+        var filenames = [ nodefn.call(tmp.tmpName, { postfix: '.pdf'       } ),
+                          nodefn.call(tmp.tmpName, { postfix: '.ps'        } ),
+                          nodefn.call(tmp.tmpName, { postfix: '.custom.ps' } ) ];
 
-    var filenames = [ nodefn.call(tmp.tmpName, { postfix: '.pdf'       } ),
-                      nodefn.call(tmp.tmpName, { postfix: '.ps'        } ),
-                      nodefn.call(tmp.tmpName, { postfix: '.custom.ps' } ) ];
+        return when.all(filenames).then(function (filenames) {
 
-    return when.all(filenames).then(function (filenames) {
+            return when(download(message.url, filenames[0])).then(function (filepath) {
 
-        return when(download(message.url, filenames[0])).then(function (filepath) {
+                return convertToPS(filenames[0], filenames[1]);
 
-            return convertToPS(filenames[0], filenames[1]);
+            }).then(function () {
 
-        }).then(function () {
+                return prepare(filenames[1], filenames[2], message);
 
-            return prepare(filenames[1], filenames[2], message);
+            }).then(function () {
 
-        }).then(function () {
+                return print(filenames[2], message);
 
-            return print(filenames[2]);
+            }).then(function () {
 
-        }).then(function () {
+                return when.map(filenames, function (filepath) { return nodefn.call(fs.unlink, filepath); } );
+            });
 
-            return when.map(filenames, function (filepath) { return nodefn.call(fs.unlink, filepath); } );
+        }).otherwise(function (err) {
+
+            console.log('ERROR ==>');
+            console.log(err);
         });
-
-    }).otherwise(function (err) {
-
-        console.log('ERROR ==>');
-        console.log(err);
-    });
+    }
 }
 
-//********************************************************************************
-//********************************************************************************
-//********************************************************************************
-//********************************************************************************
+module.exports = exports = new AgentClass();
+
+//****************************************************************************************************
+//****************************************************************************************************
+//****************************************************************************************************
+//****************************************************************************************************
 
 //============================================================
 //
@@ -170,7 +164,7 @@ function prepare(inputPath, outputPath, message) {
 //
 //
 //============================================================
-function print(filepath) {
+function print(filepath, message) {
 
     var deferred = when.defer();
 
