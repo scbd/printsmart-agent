@@ -8,7 +8,7 @@ var request  = require('superagent');
 
 var message = {
     id: '5395D9-E9915C46C8-72B4C9E2',
-    url: 'http://www.cbd.int/doc/meetings/abs/absws-2014-06/official/absws-2014-06-01-en.pdf',
+    url: 'http://www.cbd.int/doc/meetings/abs/absws-2014-06/other/absws-2014-06-info-note-en.pdf',
     symbol: 'UNEP/CBD/ABS/WS/2014/6/1',
     language: 'EN',
     name: 'John Smith - France',
@@ -44,7 +44,6 @@ function processMessage(message) {
         }).then(function () {
 
             return when.map(filenames, function (filepath) { return nodefn.call(fs.unlink, filepath); } );
-
         });
 
     }).otherwise(function (err) {
@@ -114,15 +113,16 @@ function prepare(inputPath, outputPath, message) {
     var wStream = fs.createWriteStream(outputPath);
 
     var transform = function (line) {
-        if(line=='/pdfStartPage {') {
-            line  = '/setpagedevice {\n';
-            line += '    /Duplex true def\n';
-            line += '    /StapleDetails {\n';
-            line += '        /Type 15 def\n';
-            line += '        /Position 1 def\n';
-            line += '    } def\n';
-            line += '} def\n';
-            line +='/pdfStartPage {\n';
+
+        if(line=='%%EndSetup') {
+
+            line  = '%%BeginFeature: *Duplex NoTumble\n'
+            line += '(<<) cvx exec /Duplex true /Tumble false (>>) cvx exec setpagedevice\n'
+            line += '%%EndFeature\n'
+            line += '%%BeginFeature: *Stapling Single-Portrait\n'
+            line += '<< /Staple 3 /StapleDetails << /Type 1 /StapleLocation (SinglePortrait) >> >> setpagedevice\n'
+            line += '%%EndFeature\n'
+            line += '%%EndSetup'
         }
 
         if(line=='%%Page: 1 1') {
