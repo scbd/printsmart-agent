@@ -4,7 +4,7 @@ Clone and install.
 
 ```
 cd ~
-git clone git@githiub.com:scbd/printsmart-agent
+git clone git@github.com:scbd/printsmart-agent
 cd printsmart-agent
 npm install
 ```
