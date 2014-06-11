@@ -9,6 +9,7 @@
   "dependencies": {
     "aws-sdk": "^2.0.0-rc.19",
     "event-stream": "^3.1.5",
+    "ipp": "0.0.5",
     "superagent": "^0.18.0",
     "tmp": "0.0.23",
     "when": "^3.2.2"
