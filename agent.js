@@ -107,6 +107,8 @@ function prepare(inputPath, outputPath, message) {
     var rStream = fs.createReadStream(inputPath, { encoding: 'utf8' });
     var wStream = fs.createWriteStream(outputPath);
 
+    wStream.write('@PJL SET FINISH = LEFT1POINT\n', 'UTF-8');
+
     var transform = function (line) {
 
         if(line=='%%EndSetup') {
