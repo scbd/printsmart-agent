@@ -204,7 +204,7 @@ function print(filename, message) {
         },
         "job-attributes-tag": {
             'sides': 'two-sided-long-edge',
-            'finishings': 'staple-top-left'
+            'finishings': 'staple'
         },
         data: fs.readFileSync(filename)
     };
