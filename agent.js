@@ -198,10 +198,13 @@ function print(filename, message) {
     var title = message.box + ': ' + message.symbol + ' (' + message.language + ') - ' + message.name;
 
     var options = {
-        "operation-attributes-tag": {
-            "requesting-user-name": "PrintSmart",
-            "job-name": title,
-            "document-format": "application/pdf"
+        'operation-attributes-tag': {
+            'job-name': title,
+            'document-format': 'application/postscript'
+        },
+        "job-attributes-tag": {
+            'sides': 'two-sided-long-edge',
+            'finishings': 'staple-top-left'
         },
         data: fs.readFileSync(filename)
     };
