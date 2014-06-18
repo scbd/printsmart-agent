@@ -200,6 +200,7 @@ function print(filename, message) {
     var options = {
         'operation-attributes-tag': {
             'job-name': title,
+            'requesting-user-name': 'PrintSmart',
             'document-format': 'application/postscript'
         },
         "job-attributes-tag": {
