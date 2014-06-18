@@ -8,7 +8,7 @@ var message = {
     language: 'EN',
     name: 'John Smith - France',
     box: '0021',
-    printerUri: 'ipp://localhost:631/printers/XRX0000AAF3421D'
+    printerUri: 'ipp://localhost:631/printers/meeting-printer-1'
 }
 
 when(agent.processMessage(message), function() {

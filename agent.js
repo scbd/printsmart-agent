@@ -199,7 +199,7 @@ function print(filename, message) {
 
     var options = {
         "operation-attributes-tag": {
-            "requesting-user-name": "PrintSmart",
+            "requesting-user-name": "psu",
             "job-name": title,
             "document-format": "application/pdf"
         },
