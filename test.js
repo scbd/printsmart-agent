@@ -7,8 +7,7 @@ var message = {
     symbol: 'UNEP/CBD/ABS/WS/2014/6/1',
     language: 'EN',
     name: 'John Smith - France',
-    box: '0021',
-    printerUri: 'ipp://localhost:631/printers/meeting-printer-1'
+    box: '0021'
 }
 
 when(agent.processMessage(message), function() {
