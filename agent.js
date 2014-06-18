@@ -201,7 +201,7 @@ function print(filename, message) {
         "operation-attributes-tag": {
             "requesting-user-name": "psu",
             "job-name": title,
-            "document-format": "application/pdf"
+            "document-format": "application/postscript"
         },
         data: fs.readFileSync(filename)
     };
