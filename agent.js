@@ -25,7 +25,7 @@ function AgentClass() {
     //============================================================
     this.processMessage = function processMessage(message) {
 
-        message.printerUri: 'ipp://localhost:631/printers/meeting-printer-1';
+        message.printerUri = 'ipp://localhost:631/printers/meeting-printer-1';
 
         var filenames = [ nodefn.call(tmp.tmpName, { postfix: '.pdf'       } ),
                           nodefn.call(tmp.tmpName, { postfix: '.ps'        } ),
