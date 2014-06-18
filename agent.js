@@ -1,3 +1,6 @@
+var AWS      = require('aws-sdk');
+var path     = require('path');
+var config   = require(path.join(process.env.HOME,'config.json'));
 var fs       = require('fs');
 var tmp      = require('tmp');
 var processx = require('child_process');
@@ -5,8 +8,16 @@ var when     = require('when');
 var nodefn   = require('when/node/function');
 var es       = require('event-stream');
 var request  = require('superagent');
+var ipp      = require('ipp');
 
 function AgentClass() {
+
+    var SQS = new AWS.SQS({
+        accessKeyId: config.awsAccessKeys.global.accessKeyId,
+        secretAccessKey: config.awsAccessKeys.global.secretAccessKey,
+        region: 'us-east-1',
+        apiVersion: '2012-11-05',
+    });
 
     //============================================================
     //
@@ -30,7 +41,15 @@ function AgentClass() {
 
             }).then(function () {
 
+
                 return print(filenames[2], message);
+
+            }).then(function (jobUri) {
+
+                return nodefn.call(SQS.sendMessage.bind(SQS), {
+                    QueueUrl: 'https://sqs.us-east-1.amazonaws.com/264764397830/PrintSmart_updateJobStatus',
+                    MessageBody: JSON.stringify({ 'id': message.id, 'printerUri': message.printerUri, 'jobUri': jobUri })
+                });
 
             }).then(function () {
 
@@ -107,6 +126,8 @@ function prepare(inputPath, outputPath, message) {
     var rStream = fs.createReadStream(inputPath, { encoding: 'utf8' });
     var wStream = fs.createWriteStream(outputPath);
 
+    wStream.write('@PJL SET FINISH = LEFT1POINT\n', 'UTF-8');
+
     var transform = function (line) {
 
         if(line=='%%EndSetup') {
@@ -170,22 +191,23 @@ function prepare(inputPath, outputPath, message) {
 //
 //
 //============================================================
-function print(filepath, message) {
+function print(filename, message) {
 
-    var deferred = when.defer();
+    var printer = ipp.Printer(message.printerUri);
 
     var title = message.box + ': ' + message.symbol + ' (' + message.language + ') - ' + message.name;
 
-    var ls = processx.spawn('lp', ['-o raw', filepath, '-t', title]);
+    var options = {
+        "operation-attributes-tag": {
+            "requesting-user-name": "PrintSmart",
+            "job-name": title,
+            "document-format": "application/pdf"
+        },
+        data: fs.readFileSync(filename)
+    };
 
-    ls.stdout.on('data', function (data) { console.log('stdout: ' + data); });
-    ls.stderr.on('data', function (data) { console.log('stderr: ' + data); });
+    return when(nodefn.call(printer.execute.bind(printer), "Print-Job", options), function (res) {
 
-    ls.on('close', function (code) {
-
-        if(code==0) deferred.resolve(code);
-        else        deferred.reject(code);
+        return res['job-attributes-tag']['job-uri'];
     });
-
-    return deferred.promise;
 }
