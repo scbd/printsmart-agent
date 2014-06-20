@@ -36,9 +36,14 @@ function JobClass() {
                 MessageBody: JSON.stringify(report)
             }));
 
-            if(report.status['job-state']=='pending') {
+            var needRefresh = report.status['job-state']=='pending'      ||
+                              report.status['job-state']=='pending-held' ||
+                              report.status['job-state']=='processing'   ||
+                              report.status['job-state']=='processing-stopped';
 
-                console.log('Job %s is still pending; check again in 20 seconds.', message.id);
+            if(needRefresh) {
+
+                console.log('Job %s (%s), is still pending; check again in 20 seconds.', message.id, report.status['job-id']);
 
                 tasks.push(nodefn.call(SQS.sendMessage.bind(SQS), {
                     QueueUrl: 'https://sqs.us-east-1.amazonaws.com/264764397830/PrintSmart_updateJobStatus',
