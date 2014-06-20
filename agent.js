@@ -164,11 +164,11 @@ function prepare(inputPath, outputPath, message) {
 
             line += '/Helvetica-Bold findfont 8 scalefont setfont\n';
             line += 'currentpagedevice /PageSize get aload pop exch pop 58 sub 200 exch moveto\n'
-            line += '('+escape(message.name)+') show\n';
+            line += '('+escape(message.name||"Not Named")+') show\n';
 
             line += '/Helvetica-Bold findfont 24 scalefont setfont\n';
             line += 'currentpagedevice /PageSize get aload pop exch pop 30 sub 440 exch moveto\n';
-            line += '('+escape(message.box)+') true charpath 1 setlinewidth 0.0 setgray stroke\n';
+            line += '('+escape(message.box||"undefined")+') true charpath 1 setlinewidth 0.0 setgray stroke\n';
 
             line += 'showpage';
         }
