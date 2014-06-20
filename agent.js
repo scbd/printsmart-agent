@@ -212,7 +212,7 @@ function print(filename, message) {
     };
 
     return when(nodefn.call(printer.execute.bind(printer), "Print-Job", options), function (res) {
-        console.log(res);
+        console.log("Print-Job", res);
         return res['job-attributes-tag']['job-uri'];
     });
 }
