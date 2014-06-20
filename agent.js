@@ -9,7 +9,7 @@ var nodefn   = require('when/node/function');
 var es       = require('event-stream');
 var request  = require('superagent');
 var ipp      = require('ipp');
-
+var diacritics = require('diacritics')
 function AgentClass() {
 
     var SQS = new AWS.SQS({
@@ -162,13 +162,13 @@ function prepare(inputPath, outputPath, message) {
             line += 'currentpagedevice /PageSize get aload pop exch pop 44 sub 200 exch moveto\n'
             line += '(File: '+escape(message.url)+') show\n';
 
-            line += '/Helvetica-Bold findfont 8 scalefont setfont\n';
+            line += '/Helvetica-Bold findfont 12 scalefont setfont\n';
             line += 'currentpagedevice /PageSize get aload pop exch pop 58 sub 200 exch moveto\n'
-            line += '('+escape(message.name||"Not Named")+') show\n';
+            line += '('+escape(diacritics.remove(message.name||"Not Named"))+') show\n';
 
             line += '/Helvetica-Bold findfont 24 scalefont setfont\n';
             line += 'currentpagedevice /PageSize get aload pop exch pop 30 sub 440 exch moveto\n';
-            line += '('+escape(message.box||"undefined")+') true charpath 1 setlinewidth 0.0 setgray stroke\n';
+            line += '('+escape(diacritics.remove(message.box||"undefined"))+') true charpath 1 setlinewidth 0.0 setgray stroke\n';
 
             line += 'showpage';
         }
