@@ -9,7 +9,8 @@ var nodefn   = require('when/node/function');
 var es       = require('event-stream');
 var request  = require('superagent');
 var ipp      = require('ipp');
-var diacritics = require('diacritics')
+var diacritics = require('diacritics');
+
 function AgentClass() {
 
     var SQS = new AWS.SQS({
@@ -25,7 +26,11 @@ function AgentClass() {
     //============================================================
     this.processMessage = function processMessage(message) {
 
-        message.printerUri = 'ipp://localhost:631/printers/meeting-printer-2';
+        console.log('Processing:', message);
+
+        message.printerUri = 'ipp://localhost:631/classes/ps';
+
+
 
         var filenames = [ nodefn.call(tmp.tmpName, { postfix: '.pdf'       } ),
                           nodefn.call(tmp.tmpName, { postfix: '.ps'        } ),
@@ -33,7 +38,7 @@ function AgentClass() {
 
         return when.all(filenames).then(function (filenames) {
 
-            return when(download(message.url, filenames[0])).then(function (filepath) {
+            return when(download(message.url, filenames[0])).then(function () {
 
                 return convertToPS(filenames[0], filenames[1]);
 
@@ -43,10 +48,20 @@ function AgentClass() {
 
             }).then(function () {
 
-                return print(filenames[2], message);
+                var jobName = message.box + ': ' + message.symbol + ' (' + message.language + ') - ' + message.name;
+
+                return createJob(message.printerUri, jobName);
 
             }).then(function (jobUri) {
 
+                return sendDocument(message.printerUri, jobUri, filenames[2]);
+
+            }).then(function (jobUri) {
+
+                return closeJob(message.printerUri, jobUri);
+
+            }).then(function (jobUri) {
+return; //DISABLED
                 return nodefn.call(SQS.sendMessage.bind(SQS), {
                     QueueUrl: 'https://sqs.us-east-1.amazonaws.com/264764397830/PrintSmart_updateJobStatus',
                     MessageBody: JSON.stringify({ 'id': message.id, 'printerUri': message.printerUri, 'jobUri': jobUri })
@@ -62,7 +77,7 @@ function AgentClass() {
             console.log('ERROR ==>');
             console.log(err);
         });
-    }
+    };
 }
 
 module.exports = exports = new AgentClass();
@@ -77,6 +92,8 @@ module.exports = exports = new AgentClass();
 //
 //============================================================
 function download(inputUrl, outputPath) {
+
+    console.log('download: ', inputUrl, outputPath);
 
     var deferred = when.defer();
 
@@ -98,6 +115,8 @@ function download(inputUrl, outputPath) {
 //
 //============================================================
 function convertToPS(filePath, outputPath) {
+
+    console.log('convertToPS: ', filePath, outputPath);
 
     var deferred = when.defer();
 
@@ -121,6 +140,8 @@ function convertToPS(filePath, outputPath) {
 //============================================================
 function prepare(inputPath, outputPath, message) {
 
+    console.log('prepare: ', inputPath, outputPath, message);
+
     var deferred = when.defer();
     var page = 0;
 
@@ -133,13 +154,13 @@ function prepare(inputPath, outputPath, message) {
 
         if(line=='%%EndSetup') {
 
-            line  = '%%BeginFeature: *Duplex NoTumble\n'
-            line += '(<<) cvx exec /Duplex true /Tumble false (>>) cvx exec setpagedevice\n'
-            line += '%%EndFeature\n'
-            line += '%%BeginFeature: *Stapling Single-Portrait\n'
-            line += '<< /Staple 3 /StapleDetails << /Type 1 /StapleLocation (SinglePortrait) >> >> setpagedevice\n'
-            line += '%%EndFeature\n'
-            line += '%%EndSetup'
+            line  = '%%BeginFeature: *Duplex NoTumble\n';
+            line += '(<<) cvx exec /Duplex true /Tumble false (>>) cvx exec setpagedevice\n';
+            line += '%%EndFeature\n';
+            line += '%%BeginFeature: *Stapling Single-Portrait\n';
+            line += '<< /Staple 3 /StapleDetails << /Type 1 /StapleLocation (SinglePortrait) >> >> setpagedevice\n';
+            line += '%%EndFeature\n';
+            line += '%%EndSetup';
         }
 
         if(line=='%%Page: 1 1') page = 1;
@@ -147,7 +168,6 @@ function prepare(inputPath, outputPath, message) {
 
         if(line=='showpage' && page==1) {
 
-            function escape (text) { return text.replace(/\\/, '\\\\').replace(/\(/, '\\(').replace(/\)/, '\\)'); }
 
             line  = 'newpath\n';
             line += '/Helvetica-Bold findfont 10 scalefont setfont\n';
@@ -155,15 +175,15 @@ function prepare(inputPath, outputPath, message) {
             line += '(SCBD PrintSmart - Copy printed ON-DEMAND) show\n';
 
             line += '/Helvetica findfont 7 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 34 sub 200 exch moveto\n'
+            line += 'currentpagedevice /PageSize get aload pop exch pop 34 sub 200 exch moveto\n';
             line += '(Copy ID: '+escape(message.id)+') show\n';
 
             line += '/Helvetica findfont 7 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 44 sub 200 exch moveto\n'
+            line += 'currentpagedevice /PageSize get aload pop exch pop 44 sub 200 exch moveto\n';
             line += '(File: '+escape(message.url)+') show\n';
 
             line += '/Helvetica-Bold findfont 12 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 58 sub 200 exch moveto\n'
+            line += 'currentpagedevice /PageSize get aload pop exch pop 58 sub 200 exch moveto\n';
             line += '('+escape(diacritics.remove(message.name||"Not Named"))+') show\n';
 
             line += '/Helvetica-Bold findfont 24 scalefont setfont\n';
@@ -187,6 +207,125 @@ function prepare(inputPath, outputPath, message) {
 
     return deferred.promise;
 }
+
+//============================================================
+//
+//
+//
+//============================================================
+function escape (text) {
+    return text.replace(/\\/, '\\\\')
+               .replace(/\(/, '\\(')
+               .replace(/\)/, '\\)');
+}
+
+
+//============================================================
+//
+// return: jobUri
+//
+//============================================================
+function createJob(printerUri, jobName) {
+
+    console.log('createJob', printerUri, jobName);
+
+    var printer = ipp.Printer(printerUri);
+
+    var options = {
+        'operation-attributes-tag': {
+            'job-name': jobName,
+            'requesting-user-name': 'PrintSmart',
+        },
+        "job-attributes-tag": {
+            'sides': 'two-sided-long-edge',
+            'finishings': 'staple'
+        }
+    };
+
+    return when(nodefn.call(printer.execute.bind(printer), "Create-Job", options), function (res) {
+
+        if(!res || res.statusCode != 'successful-ok')
+            throw res;
+
+        return res['job-attributes-tag']['job-uri'];
+
+    }).otherwise(function(error){
+
+        console.error("Create-Job", error);
+
+        throw error;
+    })
+}
+
+//============================================================
+//
+//
+//
+//============================================================
+function closeJob(printerUri, jobUri) {
+
+    console.log('closeJob', printerUri, jobUri);
+
+    var printer = ipp.Printer(printerUri);
+
+    var options = {
+        'operation-attributes-tag': {
+            'job-uri': jobUri,
+            'requesting-user-name': 'PrintSmart',
+            'last-document': true
+        }
+    };
+
+    return when(nodefn.call(printer.execute.bind(printer), "Send-Document", options), function (res) {
+
+        if(!res || res.statusCode != 'successful-ok') throw res;
+
+        return res['job-attributes-tag']['job-uri'];
+
+    }).otherwise(function(error){
+
+        console.error("Send-Document", error);
+
+        throw error;
+    })
+}
+
+//============================================================
+//
+//
+//
+//============================================================
+function sendDocument(printerUri, jobUri, filename) {
+
+    console.log('sendDocument', printerUri, jobUri, filename);
+
+    var printer = ipp.Printer(printerUri);
+
+    var options = {
+        'operation-attributes-tag': {
+            'job-uri': jobUri,
+            'requesting-user-name': 'PrintSmart',
+//          'document-name': title,
+            'document-format': 'application/postscript',
+            'last-document' : false
+        },
+        data: fs.readFileSync(filename)
+    };
+
+    return when(nodefn.call(printer.execute.bind(printer), "Send-Document", options), function (res) {
+
+        if(!res || res.statusCode != 'successful-ok') throw res;
+
+        return res['job-attributes-tag']['job-uri'];
+
+    }).otherwise(function(error){
+
+        console.error("Send-Document", error);
+
+        throw error;
+    })
+}
+
 
 //============================================================
 //
