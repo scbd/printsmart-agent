@@ -6,9 +6,11 @@ var message = {
     url: 'http://www.cbd.int/doc/meetings/abs/absws-2014-06/other/absws-2014-06-info-note-en.pdf',
     symbol: 'UNEP/CBD/ABS/WS/2014/6/1',
     language: 'EN',
-    name: 'John Smith - France',
+    name: 'Stephane Bilodeau',
+    government: 'Bolivia (Plurinational State of)',
+    tag: 'WG.1',
     box: '0021'
-}
+};
 
 when(agent.processMessage(message), function() {
     console.log('DONE');

@@ -13,6 +13,7 @@
     "superagent": "^0.18.0",
     "tmp": "0.0.23",
     "when": "^3.2.2",
-    "diacritics": "^1.1.1"
+    "diacritics": "^1.1.1",
+    "underscore": "latest"
   }
 }

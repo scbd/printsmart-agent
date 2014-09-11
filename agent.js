@@ -9,6 +9,7 @@ var nodefn   = require('when/node/function');
 var es       = require('event-stream');
 var request  = require('superagent');
 var ipp      = require('ipp');
+var _        = require('underscore');
 var diacritics = require('diacritics');
 
 function AgentClass() {
@@ -160,24 +161,32 @@ function prepare(inputPath, outputPath, message) {
 
             line  = 'newpath\n';
             line += '/Helvetica-Bold findfont 10 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 20 sub 200 exch moveto\n';
+            line += 'currentpagedevice /PageSize get aload pop exch pop 20 sub 190 exch moveto\n';
             line += '(SCBD PrintSmart - Copy printed ON-DEMAND) show\n';
 
             line += '/Helvetica findfont 7 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 34 sub 200 exch moveto\n';
+            line += 'currentpagedevice /PageSize get aload pop exch pop 34 sub 190 exch moveto\n';
             line += '(Copy ID: '+escape(message.id)+') show\n';
 
             line += '/Helvetica findfont 7 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 44 sub 200 exch moveto\n';
+            line += 'currentpagedevice /PageSize get aload pop exch pop 44 sub 190 exch moveto\n';
             line += '(File: '+escape(message.url)+') show\n';
 
             line += '/Helvetica-Bold findfont 12 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 58 sub 200 exch moveto\n';
+            line += 'currentpagedevice /PageSize get aload pop exch pop 58 sub 190 exch moveto\n';
             line += '('+escape(diacritics.remove(message.name||"Not Named"))+') show\n';
 
+            if(message.government) {
+                line += '/Helvetica-Bold findfont 10 scalefont setfont\n';
+                line += 'currentpagedevice /PageSize get aload pop exch pop 72 sub 190 exch moveto\n';
+                line += '('+escape(diacritics.remove(message.government))+') show\n';
+            }
+
+            var box = _.chain([message.box, message.tag]).flatten().compact().value().join('-');
+
             line += '/Helvetica-Bold findfont 24 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 30 sub 440 exch moveto\n';
-            line += '('+escape(diacritics.remove(message.box||"undefined"))+') true charpath 1 setlinewidth 0.0 setgray stroke\n';
+            line += 'currentpagedevice /PageSize get aload pop exch pop 30 sub 430 exch moveto\n';
+            line += '('+escape(diacritics.remove(box||"NOT-SET"))+') true charpath 1 setlinewidth 0.0 setgray stroke\n';
 
             line += 'showpage';
         }
@@ -226,7 +235,7 @@ function print(filename, message) {
         },
         "job-attributes-tag": {
             'sides': 'two-sided-long-edge',
-            'finishings': 'staple'
+            'finishings': ['staple']
         },
         data: fs.readFileSync(filename)
     };
