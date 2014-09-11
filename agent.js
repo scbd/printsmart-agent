@@ -30,8 +30,6 @@ function AgentClass() {
 
         message.printerUri = 'ipp://localhost:631/classes/ps';
 
-
-
         var filenames = [ nodefn.call(tmp.tmpName, { postfix: '.pdf'       } ),
                           nodefn.call(tmp.tmpName, { postfix: '.ps'        } ),
                           nodefn.call(tmp.tmpName, { postfix: '.custom.ps' } ) ];
@@ -48,19 +46,10 @@ function AgentClass() {
 
             }).then(function () {
 
-                var jobName = message.box + ': ' + message.symbol + ' (' + message.language + ') - ' + message.name;
-
-                return createJob(message.printerUri, jobName);
+                return print(filenames[2], message);
 
             }).then(function (jobUri) {
 
-                return sendDocument(message.printerUri, jobUri, filenames[2]);
-
-            }).then(function (jobUri) {
-
-                return closeJob(message.printerUri, jobUri);
-
-            }).then(function (jobUri) {
 return; //DISABLED
                 return nodefn.call(SQS.sendMessage.bind(SQS), {
                     QueueUrl: 'https://sqs.us-east-1.amazonaws.com/264764397830/PrintSmart_updateJobStatus',
@@ -218,114 +207,6 @@ function escape (text) {
                .replace(/\(/, '\\(')
                .replace(/\)/, '\\)');
 }
-
-
-//============================================================
-//
-// return: jobUri
-//
-//============================================================
-function createJob(printerUri, jobName) {
-
-    console.log('createJob', printerUri, jobName);
-
-    var printer = ipp.Printer(printerUri);
-
-    var options = {
-        'operation-attributes-tag': {
-            'job-name': jobName,
-            'requesting-user-name': 'PrintSmart',
-        },
-        "job-attributes-tag": {
-            'sides': 'two-sided-long-edge',
-            'finishings': 'staple'
-        }
-    };
-
-    return when(nodefn.call(printer.execute.bind(printer), "Create-Job", options), function (res) {
-
-        if(!res || res.statusCode != 'successful-ok')
-            throw res;
-
-        return res['job-attributes-tag']['job-uri'];
-
-    }).otherwise(function(error){
-
-        console.error("Create-Job", error);
-
-        throw error;
-    })
-}
-
-//============================================================
-//
-//
-//
-//============================================================
-function closeJob(printerUri, jobUri) {
-
-    console.log('closeJob', printerUri, jobUri);
-
-    var printer = ipp.Printer(printerUri);
-
-    var options = {
-        'operation-attributes-tag': {
-            'job-uri': jobUri,
-            'requesting-user-name': 'PrintSmart',
-            'last-document': true
-        }
-    };
-
-    return when(nodefn.call(printer.execute.bind(printer), "Send-Document", options), function (res) {
-
-        if(!res || res.statusCode != 'successful-ok') throw res;
-
-        return res['job-attributes-tag']['job-uri'];
-
-    }).otherwise(function(error){
-
-        console.error("Send-Document", error);
-
-        throw error;
-    })
-}
-
-//============================================================
-//
-//
-//
-//============================================================
-function sendDocument(printerUri, jobUri, filename) {
-
-    console.log('sendDocument', printerUri, jobUri, filename);
-
-    var printer = ipp.Printer(printerUri);
-
-    var options = {
-        'operation-attributes-tag': {
-            'job-uri': jobUri,
-            'requesting-user-name': 'PrintSmart',
-//          'document-name': title,
-            'document-format': 'application/postscript',
-            'last-document' : false
-        },
-        data: fs.readFileSync(filename)
-    };
-
-    return when(nodefn.call(printer.execute.bind(printer), "Send-Document", options), function (res) {
-
-        if(!res || res.statusCode != 'successful-ok') throw res;
-
-        return res['job-attributes-tag']['job-uri'];
-
-    }).otherwise(function(error){
-
-        console.error("Send-Document", error);
-
-        throw error;
-    })
-}
-
 
 //============================================================
 //
