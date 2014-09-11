@@ -1,0 +1,14 @@
+{
+    "maxerr"   : 50,
+    "undef"    : true,
+    "unused"   : true,
+    "strict"   : false,
+    "browser"  : false,
+	"node"     : true,
+    "debug"    : true,
+    "jquery"   : false,
+    "devel"    : true,
+    "smarttabs": true,
+    "trailing" : true,
+    "predef"   : []
+}
