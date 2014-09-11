@@ -64,8 +64,7 @@ return; //DISABLED
 
         }).otherwise(function (err) {
 
-            console.log('ERROR ==>');
-            console.log(err);
+            console.log('ERROR ==>', err);
         });
     };
 }
@@ -82,8 +81,6 @@ module.exports = exports = new AgentClass();
 //
 //============================================================
 function download(inputUrl, outputPath) {
-
-    console.log('download: ', inputUrl, outputPath);
 
     var deferred = when.defer();
 
@@ -106,8 +103,6 @@ function download(inputUrl, outputPath) {
 //============================================================
 function convertToPS(filePath, outputPath) {
 
-    console.log('convertToPS: ', filePath, outputPath);
-
     var deferred = when.defer();
 
     var ls = processx.spawn('pdftops', [filePath, outputPath]);
@@ -129,8 +124,6 @@ function convertToPS(filePath, outputPath) {
 //
 //============================================================
 function prepare(inputPath, outputPath, message) {
-
-    console.log('prepare: ', inputPath, outputPath, message);
 
     var deferred = when.defer();
     var page = 0;
@@ -241,7 +234,6 @@ function print(filename, message) {
     };
 
     return when(nodefn.call(printer.execute.bind(printer), "Print-Job", options), function (res) {
-        console.log("Print-Job", res);
         return res['job-attributes-tag']['job-uri'];
     });
 }
