@@ -1,3 +1,4 @@
+require("console-stamp")(console, "HH:mm:ss.l");
 var agent  = require('./agent');
 var job    = require('./job');
 var worker = require('./worker');

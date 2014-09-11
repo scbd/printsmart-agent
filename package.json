@@ -14,6 +14,7 @@
     "tmp": "0.0.23",
     "when": "^3.2.2",
     "diacritics": "^1.1.1",
-    "underscore": "latest"
+    "underscore": "latest",
+    "console-stamp": "^0.1.3"
   }
 }
