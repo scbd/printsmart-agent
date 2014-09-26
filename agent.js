@@ -153,37 +153,45 @@ function prepare(inputPath, outputPath, message) {
 
 
             line  = 'newpath\n';
-            line += '/Helvetica-Bold findfont 10 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 20 sub 190 exch moveto\n';
-            line += '(SCBD PrintSmart - Copy printed ON-DEMAND) show\n';
 
-            line += '/Helvetica findfont 7 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 34 sub 190 exch moveto\n';
-            line += '(Copy ID: '+escape(message.id)+') show\n';
+            // TOP OF PAGE
 
-            line += '/Helvetica findfont 7 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 44 sub 190 exch moveto\n';
-            line += '(File: '+escape(message.url)+') show\n';
-
+            // NAME
             line += '/Helvetica-Bold findfont 12 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 58 sub 190 exch moveto\n';
+            line += 'currentpagedevice /PageSize get aload pop exch pop 20 sub 190 exch moveto\n';
             line += '('+escape(diacritics.remove(message.name||"Not Named"))+') show\n';
 
-            line += '/Helvetica-Bold findfont 24 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 30 sub 30 exch moveto\n';
-            line += '('+escape(initials(diacritics.remove(message.name||"")))+') show\n';
+            // COUNTRY
 
             if(message.government) {
                 line += '/Helvetica-Bold findfont 10 scalefont setfont\n';
-                line += 'currentpagedevice /PageSize get aload pop exch pop 72 sub 190 exch moveto\n';
+                line += 'currentpagedevice /PageSize get aload pop exch pop 36 sub 190 exch moveto\n';
                 line += '('+escape(diacritics.remove(message.government))+') show\n';
             }
 
-            var box = _.chain([message.box, message.tag]).flatten().compact().value().join('-');
+            line += '/Helvetica findfont 7 scalefont setfont\n';
+            line += 'currentpagedevice /PageSize get aload pop exch pop 48 sub 190 exch moveto\n';
+            line += '(SCBD PrintSmart - Copy printed ON-DEMAND) show\n';
+
+
+
+            // TOP LEFT
+
+            var box = [message.box, initials(message.name||"")].join(' - ');
 
             line += '/Helvetica-Bold findfont 24 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 30 sub 430 exch moveto\n';
-            line += '('+escape(diacritics.remove(box||"NOT-SET"))+') true charpath 1 setlinewidth 0.0 setgray stroke\n';
+            line += 'currentpagedevice /PageSize get aload pop exch pop 30 sub 40 exch moveto\n';
+            line += '('+escape(diacritics.remove(box||"NOT-SET"))+') show\n';
+
+            // TOP RIGHT
+
+            var tag = diacritics.remove(message.tag||"");
+
+            if(message.tag) {
+                line += '/Helvetica-Bold findfont 24 scalefont setfont\n';
+                line += 'currentpagedevice /PageSize get aload pop exch pop 30 sub 472 exch moveto\n';
+                line += '('+escape(diacritics.remove(tag))+') true charpath 1 setlinewidth 0.0 setgray stroke\n';
+            }
 
             line += 'showpage';
         }
@@ -220,7 +228,7 @@ function escape (text) {
 //
 //============================================================
 function initials (name) {
-    
+
     var names = (name||"").toString().toLocaleUpperCase().split(' ');
 
     return _.chain(names).map(function(n){
