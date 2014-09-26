@@ -169,6 +169,10 @@ function prepare(inputPath, outputPath, message) {
             line += 'currentpagedevice /PageSize get aload pop exch pop 58 sub 190 exch moveto\n';
             line += '('+escape(diacritics.remove(message.name||"Not Named"))+') show\n';
 
+            line += '/Helvetica-Bold findfont 24 scalefont setfont\n';
+            line += 'currentpagedevice /PageSize get aload pop exch pop 30 sub 30 exch moveto\n';
+            line += '('+escape(initials(diacritics.remove(message.name||"")))+') show\n';
+
             if(message.government) {
                 line += '/Helvetica-Bold findfont 10 scalefont setfont\n';
                 line += 'currentpagedevice /PageSize get aload pop exch pop 72 sub 190 exch moveto\n';
@@ -208,6 +212,20 @@ function escape (text) {
     return text.replace(/\\/, '\\\\')
                .replace(/\(/, '\\(')
                .replace(/\)/, '\\)');
+}
+
+//============================================================
+//
+//
+//
+//============================================================
+function initials (name) {
+    
+    var names = (name||"").toString().toLocaleUpperCase().split(' ');
+
+    return _.chain(names).map(function(n){
+        return (n||"").replace(/[^A-Z\s]+/gi, '').charAt(0);
+    }).compact().value().join('');
 }
 
 //============================================================
