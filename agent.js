@@ -25,11 +25,30 @@ function AgentClass() {
     //
     //
     //============================================================
+    function selectQueue(message)
+    {
+        var box = normalize(message.box);
+
+        if(box<'0060') return 'ipp://localhost:631/classes/ctr-a';
+        if(box<'0130') return 'ipp://localhost:631/classes/ctr-b';
+        if(box<'0200') return 'ipp://localhost:631/classes/ctr-c';
+
+        if(box<'2000') return 'ipp://localhost:631/classes/org-a';
+        if(box<'3000') return 'ipp://localhost:631/classes/org-b';
+        if(box<'5000') return 'ipp://localhost:631/classes/org-c';
+
+        return 'ipp://localhost:631/classes/default';
+    }
+
+    //============================================================
+    //
+    //
+    //============================================================
     this.processMessage = function processMessage(message) {
 
         console.log('Processing:', message);
 
-        message.printerUri = 'ipp://localhost:631/classes/ps';
+        message.printerUri = selectQueue(message);
 
         var filenames = [ nodefn.call(tmp.tmpName, { postfix: '.pdf'       } ),
                           nodefn.call(tmp.tmpName, { postfix: '.ps'        } ),
@@ -234,6 +253,21 @@ function initials (name) {
     return _.chain(names).map(function(n){
         return (n||"").replace(/[^A-Z\s]+/gi, '').charAt(0);
     }).compact().value().join('');
+}
+
+//============================================================
+//
+//
+//
+//============================================================
+function normalize (text) {
+
+    text = (text||"").toString();
+
+    while(text.length<4)
+        text = '0'+text;
+
+    return text;
 }
 
 //============================================================
