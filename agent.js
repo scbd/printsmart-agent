@@ -1,6 +1,5 @@
 var AWS      = require('aws-sdk');
-var path     = require('path');
-var config   = require(path.join(process.env.HOME,'config.json'));
+var config   = require('./config');
 var fs       = require('fs');
 var tmp      = require('tmp');
 var processx = require('child_process');
@@ -70,9 +69,8 @@ function AgentClass() {
 
             }).then(function (jobUri) {
 
-return; //DISABLED
                 return nodefn.call(SQS.sendMessage.bind(SQS), {
-                    QueueUrl: 'https://sqs.us-east-1.amazonaws.com/264764397830/PrintSmart_updateJobStatus',
+                    QueueUrl: config.printsmart.awsQueues.updateJobStatus,
                     MessageBody: JSON.stringify({ 'id': message.id, 'printerUri': message.printerUri, 'jobUri': jobUri })
                 });
 

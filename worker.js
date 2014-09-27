@@ -1,6 +1,5 @@
 var AWS = require('aws-sdk');
-var path = require('path');
-var config = require(path.join(process.env.HOME,'config.json'));
+var config = require('./config');
 var when = require("when");
 var nodefn = require("when/node/function");
 

@@ -1,6 +1,5 @@
 var AWS    = require('aws-sdk');
-var path   = require('path');
-var config = require(path.join(process.env.HOME,'config.json'));
+var config = require('./config');
 var when   = require("when");
 var nodefn = require("when/node/function");
 var ipp    = require('ipp');
@@ -32,7 +31,7 @@ function JobClass() {
             console.log('Updating job %s (%s) status...', message.id, message.jobUri);
 
             tasks.push(nodefn.call(SQS.sendMessage.bind(SQS), {
-                QueueUrl: 'https://sqs.us-east-1.amazonaws.com/264764397830/PrintSmart_jobStatusReport',
+                QueueUrl: config.printsmart.awsQueues.reportJobStatus,
                 MessageBody: JSON.stringify(report)
             }));
 
@@ -46,7 +45,7 @@ function JobClass() {
                 console.log('Job %s (%s), is still pending; check again in 20 seconds.', message.id, report.status['job-id']);
 
                 tasks.push(nodefn.call(SQS.sendMessage.bind(SQS), {
-                    QueueUrl: 'https://sqs.us-east-1.amazonaws.com/264764397830/PrintSmart_updateJobStatus',
+                    QueueUrl: config.printsmart.awsQueues.updateJobStatus,
                     MessageBody: JSON.stringify(message)
                 }));
             }

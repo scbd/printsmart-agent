@@ -1,21 +1,18 @@
 require("console-stamp")(console, "HH:mm:ss.l");
-var agent  = require('./agent');
-var job    = require('./job');
-var worker = require('./worker');
+var agent     = require('./agent');
+var job       = require('./job');
+var worker    = require('./worker');
+var config    = require('./config').printsmart.awsQueues;
 
 console.log('info: Starting PaperSmart Agent... (press ctrl-c to stop)');
 console.log('info: ------------------------------------------------------------');
 
-worker.listen('https://sqs.us-east-1.amazonaws.com/264764397830/PrintSmart_print', function (message) {
+worker.listen(config.printsmart.awsQueues.print, function (message) {
 
-    var message = JSON.parse(message.Body);
-
-    return agent.processMessage(message);
+    return agent.processMessage(JSON.parse(message.Body));
 });
 
-worker.listen('https://sqs.us-east-1.amazonaws.com/264764397830/PrintSmart_updateJobStatus', function (message) {
+worker.listen(config.printsmart.awsQueues.updateJobStatus, function (message) {
 
-    var message = JSON.parse(message.Body);
-
-    return job.updateJobStatus(message);
+    return job.updateJobStatus(JSON.parse(message.Body));
 });
