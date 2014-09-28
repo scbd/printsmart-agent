@@ -282,12 +282,12 @@ function print(filename, message) {
         'operation-attributes-tag': {
             'job-name': title,
             'requesting-user-name': 'PrintSmart',
-            'document-format': 'application/postscript',
-            'copies' : Math.round(message.copies || 1).toString()
+            'document-format': 'application/postscript'
         },
         "job-attributes-tag": {
             'sides': 'two-sided-long-edge',
-            'finishings': ['staple']
+            'finishings': ['staple'],
+            'copies' : Math.round(message.copies || 1).toString()
         },
         data: fs.readFileSync(filename)
     };
