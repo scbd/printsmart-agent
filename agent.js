@@ -58,6 +58,8 @@ function AgentClass() {
     //============================================================
     this.processMessage = function processMessage(message) {
 
+        message = JSON.parse(JSON.stringify(message));//fullclone object;
+
         message.printerUri = selectQueue(message);
 
         console.log('Processing:', message);
