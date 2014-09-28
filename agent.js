@@ -166,7 +166,7 @@ function prepare(inputPath, outputPath, message) {
         if(line=='%%Page: 1 1') page = 1;
         if(line=='%%Page: 2 2') page = 2;
 
-        if(line=='showpage' && page==1) {
+        if(!message.anonymous && line=='showpage' && page==1) {
 
 
             line  = 'newpath\n';
@@ -282,7 +282,8 @@ function print(filename, message) {
         'operation-attributes-tag': {
             'job-name': title,
             'requesting-user-name': 'PrintSmart',
-            'document-format': 'application/postscript'
+            'document-format': 'application/postscript',
+            'copies' : Math.round(message.copies || 1).toString()
         },
         "job-attributes-tag": {
             'sides': 'two-sided-long-edge',
