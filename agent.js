@@ -20,8 +20,6 @@ function AgentClass() {
         apiVersion: '2012-11-05',
     });
 
-    var nextPrintShopPrinter = 0;
-
     //============================================================
     //
     //
@@ -30,16 +28,8 @@ function AgentClass() {
     {
         var box = normalize(message.box);
 
-        if(message.anonymous) { // For printshop
-
-            nextPrintShopPrinter++;
-
-            if(nextPrintShopPrinter%5===1) { message.multijobs=true; return 'ipp://localhost:631/classes/printshop-pcl-12'; }
-            if(nextPrintShopPrinter%5===3) { message.multijobs=true; return 'ipp://localhost:631/classes/printshop-pcl-14'; }
-            if(nextPrintShopPrinter%5===4) { message.multijobs=true; return 'ipp://localhost:631/classes/printshop-pcl-15'; }
-
+        if(message.anonymous) // For printshop
             return 'ipp://localhost:631/classes/printshop';
-        }
 
         if(box<'0060') return 'ipp://localhost:631/classes/ctr-a';
         if(box<'0130') return 'ipp://localhost:631/classes/ctr-b';
@@ -307,20 +297,6 @@ function print(filename, message) {
         },
         data: fs.readFileSync(filename)
     };
-
-    if(message.multijobs && copies>1) { //Send copies-1 copy of document for stupid PCL canon printers
-
-        delete options['job-attributes-tag'].copies;
-
-        for(var i=1;i<copies;++i) {
-
-            console.log("Copy: ", i, '/', copies);
-
-            nodefn.call(printer.execute.bind(printer), "Print-Job", options);
-        }
-
-        console.log("Copy: ", copies, '/', copies);
-    }
 
     if(options['job-attributes-tag'].copies)
         console.log("Copies: ", copies);
