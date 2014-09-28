@@ -311,9 +311,17 @@ function print(filename, message) {
         delete options['job-attributes-tag'].copies;
 
         for(var i=1;i<copies;++i) {
+
+            Console.log("Copy: ", i, '/', copies);
+
             nodefn.call(printer.execute.bind(printer), "Print-Job", options);
         }
+
+        Console.log("Copy: ", copies, '/', copies);
     }
+
+    if(options['job-attributes-tag'].copies)
+        Console.log("Copies: ", copies);
 
     return when(nodefn.call(printer.execute.bind(printer), "Print-Job", options), function (res) {
         return res['job-attributes-tag']['job-uri'];
