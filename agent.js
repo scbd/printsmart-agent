@@ -152,7 +152,7 @@ function prepare(inputPath, outputPath, message) {
 
     var transform = function (line) {
 
-        if(line=='%%EndSetup') {
+        if(false && line=='%%EndSetup') {
 
             line  = '%%BeginFeature: *Duplex NoTumble\n';
             line += '(<<) cvx exec /Duplex true /Tumble false (>>) cvx exec setpagedevice\n';
