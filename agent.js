@@ -28,6 +28,8 @@ function AgentClass() {
     {
         var box = normalize(message.box);
 
+        if(message.anonymous) return 'ipp://localhost:631/classes/printshop';
+
         if(box<'0060') return 'ipp://localhost:631/classes/ctr-a';
         if(box<'0130') return 'ipp://localhost:631/classes/ctr-b';
         if(box<'0200') return 'ipp://localhost:631/classes/ctr-c';
@@ -152,16 +154,16 @@ function prepare(inputPath, outputPath, message) {
 
     var transform = function (line) {
 
-        if(false && line=='%%EndSetup') {
-
-            line  = '%%BeginFeature: *Duplex NoTumble\n';
-            line += '(<<) cvx exec /Duplex true /Tumble false (>>) cvx exec setpagedevice\n';
-            line += '%%EndFeature\n';
-            line += '%%BeginFeature: *Stapling Single-Portrait\n';
-            line += '<< /Staple 3 /StapleDetails << /Type 1 /StapleLocation (SinglePortrait) >> >> setpagedevice\n';
-            line += '%%EndFeature\n';
-            line += '%%EndSetup';
-        }
+        // if(line=='%%EndSetup') {
+        //
+        //     line  = '%%BeginFeature: *Duplex NoTumble\n';
+        //     line += '(<<) cvx exec /Duplex true /Tumble false (>>) cvx exec setpagedevice\n';
+        //     line += '%%EndFeature\n';
+        //     line += '%%BeginFeature: *Stapling Single-Portrait\n';
+        //     line += '<< /Staple 3 /StapleDetails << /Type 1 /StapleLocation (SinglePortrait) >> >> setpagedevice\n';
+        //     line += '%%EndFeature\n';
+        //     line += '%%EndSetup';
+        // }
 
         if(line=='%%Page: 1 1') page = 1;
         if(line=='%%Page: 2 2') page = 2;
