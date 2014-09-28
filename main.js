@@ -2,7 +2,7 @@ require("console-stamp")(console, "HH:mm:ss.l");
 var agent     = require('./agent');
 var job       = require('./job');
 var worker    = require('./worker');
-var config    = require('./config').printsmart.awsQueues;
+var config    = require('./config');
 
 console.log('info: Starting PaperSmart Agent... (press ctrl-c to stop)');
 console.log('info: ------------------------------------------------------------');
