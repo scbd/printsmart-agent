@@ -50,7 +50,7 @@ function AgentClass() {
 
         message = JSON.parse(JSON.stringify(message));//fullclone object;
 
-        message.printerUri = selectQueue(message);
+        message.printerUri = message.printerUri || selectQueue(message);
 
         console.log('Processing:', message);
 
@@ -73,6 +73,9 @@ function AgentClass() {
                 return print(filenames[2], message);
 
             }).then(function (jobUri) {
+
+                if(!message.id)
+                    return;
 
                 return nodefn.call(SQS.sendMessage.bind(SQS), {
                     QueueUrl: config.printsmart.awsQueues.updateJobStatus,
