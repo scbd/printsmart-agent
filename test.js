@@ -12,7 +12,7 @@ var message = {
     government: 'Bolivia (Plurinational State of)',
     tag: 'WG.1',
     box: '0021',
-    printerUri : 'http://192.168.100.58:631/classes/ctr-c'
+    printerUri : process.argv[2] || 'http://localhost:631/classes/default'
 };
 
 when(agent.processMessage(message), function() {
