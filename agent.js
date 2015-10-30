@@ -31,14 +31,6 @@ function AgentClass() {
         if(message.anonymous) // For printshop
             return 'ipp://localhost:631/classes/printshop';
 
-        if(box<'0060') return 'ipp://localhost:631/classes/ctr-a';
-        if(box<'0130') return 'ipp://localhost:631/classes/ctr-b';
-        if(box<'0200') return 'ipp://localhost:631/classes/ctr-c';
-
-        if(box<'2000') return 'ipp://localhost:631/classes/org-a';
-        if(box<'3000') return 'ipp://localhost:631/classes/org-b';
-        if(box<'5000') return 'ipp://localhost:631/classes/org-c';
-
         return 'ipp://localhost:631/classes/default';
     }
 
