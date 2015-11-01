@@ -79,9 +79,6 @@ function AgentClass() {
                 return when.map(filenames, function (filepath) { return nodefn.call(fs.unlink, filepath); } );
             });
 
-        }).otherwise(function (err) {
-
-            console.log('ERROR ==>', err);
         });
     };
 }
