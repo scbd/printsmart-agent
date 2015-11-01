@@ -48,14 +48,12 @@ function WorkerClass() {
 
 			}).otherwise(function onerror (error) {
 
-				console.log('ERROR =>>');
-				console.log(error);
+				console.error(error);
 			});
 
 		}).otherwise(function onerror (error) {
 
-            console.log('ERROR =>>');
-            console.log(error);
+            console.error(error);
 
             return promise.delay(10000);
 
