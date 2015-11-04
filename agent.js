@@ -119,7 +119,7 @@ function convertToPS(filePath, outputPath) {
 
     var deferred = when.defer();
 
-    var ls = processx.spawn('pdftops', [filePath, outputPath]);
+    var ls = processx.spawn('pdftops', ['-paper', 'letter', filePath, outputPath]);
 
     ls.stdout.on('data', function (data) { console.log('stdout: ' + data); });
     ls.stderr.on('data', function (data) { console.log('stderr: ' + data); });
