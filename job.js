@@ -21,7 +21,7 @@ function JobClass() {
 
         var printer = ipp.Printer(message.printerUri);
 
-        var options = { 'operation-attributes-tag': { 'job-uri': message.jobUri } };
+        var options = { 'version' : '1.1', 'operation-attributes-tag': { 'job-uri': message.jobUri } };
 
         return when(nodefn.call(printer.execute.bind(printer), "Get-Job-Attributes", options), function (res) {
 

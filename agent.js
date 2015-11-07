@@ -10,6 +10,8 @@ var request  = require('superagent');
 var ipp      = require('ipp');
 var _        = require('underscore');
 var diacritics = require('diacritics');
+var printQueues = require('./print-queues');
+
 
 function AgentClass() {
 
@@ -26,12 +28,14 @@ function AgentClass() {
     //============================================================
     function selectQueue(message)
     {
-        var box = normalize(message.box);
+        //var box = normalize(message.box);
 
-        if(message.anonymous) // For printshop
-            return 'ipp://localhost:631/classes/printshop';
+        // if(message.anonymous) // For printshop
+        //     return 'ipp://localhost:631/classes/printshop';
 
-        return 'ipp://localhost:631/classes/default';
+        var index = Math.floor(Math.random()*printQueues.length);
+
+        return config.printsmart.queues[index];
     }
 
     //============================================================
@@ -46,9 +50,11 @@ function AgentClass() {
 
         console.log('Processing:', message);
 
+        var job = null;
         var filenames = [ nodefn.call(tmp.tmpName, { postfix: '.pdf'       } ),
                           nodefn.call(tmp.tmpName, { postfix: '.ps'        } ),
                           nodefn.call(tmp.tmpName, { postfix: '.custom.ps' } ) ];
+
 
         return when.all(filenames).then(function (filenames) {
 
@@ -64,19 +70,31 @@ function AgentClass() {
 
                 return print(filenames[2], message);
 
-            }).then(function (jobUri) {
+            }).then(function (jobAttr) {
+
+                job = {
+                    id: message.id,
+                    printerUri: message.printerUri,
+                    jobId:  jobAttr['job-id'],
+                    jobUri: jobAttr['job-uri']
+                };
 
                 if(!message.id)
                     return;
 
                 return nodefn.call(SQS.sendMessage.bind(SQS), {
                     QueueUrl: config.printsmart.awsQueues.updateJobStatus,
-                    MessageBody: JSON.stringify({ 'id': message.id, 'printerUri': message.printerUri, 'jobUri': jobUri })
+                    MessageBody: JSON.stringify(job)
                 });
 
             }).then(function () {
 
                 return when.map(filenames, function (filepath) { return nodefn.call(fs.unlink, filepath); } );
+
+            }).then(function(){
+
+                return job;
+
             });
 
         });
@@ -277,6 +295,7 @@ function print(filename, message) {
     var copies = Math.round(message.copies || 1);
 
     var options = {
+        'version' : '1.1',
         'operation-attributes-tag': {
             'job-name': title,
             'requesting-user-name': 'PrintSmart',
@@ -294,6 +313,6 @@ function print(filename, message) {
         console.log("Copies: ", copies);
 
     return when(nodefn.call(printer.execute.bind(printer), "Print-Job", options), function (res) {
-        return res['job-attributes-tag']['job-uri'];
+        return res['job-attributes-tag'];
     });
 }
