@@ -63,27 +63,55 @@ nano config.json
 }
 ```
 
-### Updating
-
-Pull changes and re-install.
-
+### SSH Reverse tunnel connection
 ```
-cd ~/printsmart-agent
-git pull
-npm install
+ssh -A -L 21631:localhost:631 -o "ProxyCommand=ssh -A user@public.server netcat localhost 2122" psu@localhost -p 2122 $@
 ```
 
-If required, restart.
+### Uselfull CUPS Command lines
+
+List drivers
+```
+$ lpinfo -m
+```
+
+List printer
+```
+lpstat -p
+```
+
+Add printer
+```
+$ lpadmin -p ps1 -v ipp://printer1.local/ipp -E -m drv:///sample.drv/generic.ppd -D "PrintSmart" -L 'Doc Distribution'
+$ lpadmin -p ps2 -v ipp://printer2.local/ipp -E -m drv:///sample.drv/generic.ppd -D "PrintSmart" -L 'Doc Distribution'
+$ lpadmin -p ps3 -v ipp://printer3.local/ipp -E -m drv:///sample.drv/generic.ppd -D "PrintSmart Backup" -L 'Doc Distribution'
+```
+* `raw` No driver (Direct print)
+* `everywhere` Query printer for driver (if available)
+* `drv:///sample.drv/generic.ppd` - Generic PostScript Printer
+* `drv:///sample.drv/generpcl.ppd` - Generic PCL Laser Printer
+
+Remove printer
+```
+$ lpadmin -r ps3
 
 ```
-forever restartall
+
+Lits printers in a class
+```
+$ lpstat -c default
 ```
 
-### Running
-
-Start (via `forever`).
-
+Add printers to a class
 ```
-cd ~/printsmart-agent
-forever main
+$ lpadmin -p ps1 -c default
+$ lpadmin -p ps2 -c default
+$ lpadmin -p ps3 -c default
+$ cupsenable default
+$ cupsaccept default
+```
+
+Remove printers from a class
+```
+$ lpadmin -p ps3 -r default
 ```
