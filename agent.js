@@ -8,7 +8,7 @@ var nodefn   = require('when/node/function');
 var es       = require('event-stream');
 var request  = require('superagent');
 var ipp      = require('ipp');
-var _        = require('underscore');
+var _        = require('lodash');
 var diacritics = require('diacritics');
 
 function AgentClass() {
