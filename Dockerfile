@@ -3,7 +3,6 @@ FROM node:4
 # Install cups
 RUN apt-get update
 RUN apt-get install -y cups nano wget curl
-RUN curl http://www.openprinting.org/ppd-o-matic.php\?driver=Postscript\&printer=Generic-PostScript_Printer > /usr/share/ppd/cupsfilters/Generic-PostScript_Printer.ppd
 
 WORKDIR /usr/src/app
 
