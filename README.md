@@ -1,21 +1,18 @@
-### Installing
+### Build & Run
 
-Clone and install.
-
+Build
 ```
-cd ~
-git clone https://github.com/scbd/printsmart-agent
-cd printsmart-agent
-npm install
+$ docker build -t printsmart-agent git@github.com:scbd/printsmart-agent.git
 ```
 
-Under folder `$HOME`, place a file named `config.json` containing valid __AWS Keys__ .
-
+Run (daemon)
 ```
-cd ~
-nano config.json
+$ docker run -d --name printsmart -p 6631:631 -v /path/to/file/on/host/config.json:/config/config.json -e CONFIG_FILE=/config/config.json printsmart-agent
 ```
 
+Logs
+```
+$ docker logs -f printsmart
 ```
 
 ### Sample config file

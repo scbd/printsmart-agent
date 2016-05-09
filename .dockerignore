@@ -1,0 +1,8 @@
+**/.DS_Store
+.git
+.gitattributes
+.gitignore
+.settings
+.jshintrc
+config.json
+node_modules
