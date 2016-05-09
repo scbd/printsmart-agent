@@ -1,17 +1,10 @@
-var AWS    = require('aws-sdk');
+var sqs    = require('./sqs');
 var config = require('./config');
 var when   = require("when");
 var nodefn = require("when/node/function");
 var ipp    = require('ipp');
 
 function JobClass() {
-
-    var SQS = new AWS.SQS({
-        accessKeyId: config.awsAccessKeys.global.accessKeyId,
-        secretAccessKey: config.awsAccessKeys.global.secretAccessKey,
-        region: 'us-east-1',
-        apiVersion: '2012-11-05',
-    });
 
     //============================================================
     //
@@ -30,10 +23,7 @@ function JobClass() {
 
             console.log('Updating job %s (%s) status...', message.id, message.jobUri);
 
-            tasks.push(nodefn.call(SQS.sendMessage.bind(SQS), {
-                QueueUrl: config.printsmart.awsQueues.reportJobStatus,
-                MessageBody: JSON.stringify(report)
-            }));
+            tasks.push(sqs.sendMessage(config.queues.reportJobStatus, report));
 
             var needRefresh = report.status['job-state']=='pending'      ||
                               report.status['job-state']=='pending-held' ||
@@ -44,10 +34,7 @@ function JobClass() {
 
                 console.log('Job %s (%s), is still pending; check again in 20 seconds.', message.id, report.status['job-id']);
 
-                tasks.push(nodefn.call(SQS.sendMessage.bind(SQS), {
-                    QueueUrl: config.printsmart.awsQueues.updateJobStatus,
-                    MessageBody: JSON.stringify(message)
-                }));
+                tasks.push(sqs.sendMessage(config.queues.updateJobStatus, message));
             }
 
             return when.all(tasks);

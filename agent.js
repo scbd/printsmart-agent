@@ -1,4 +1,4 @@
-var AWS      = require('aws-sdk');
+var sqs      = require('./sqs');
 var config   = require('./config');
 var fs       = require('fs');
 var tmp      = require('tmp');
@@ -13,20 +13,13 @@ var diacritics = require('diacritics');
 
 function AgentClass() {
 
-    var SQS = new AWS.SQS({
-        accessKeyId: config.awsAccessKeys.global.accessKeyId,
-        secretAccessKey: config.awsAccessKeys.global.secretAccessKey,
-        region: 'us-east-1',
-        apiVersion: '2012-11-05',
-    });
-
     //============================================================
     //
     //
     //============================================================
     function selectQueue(message)
     {
-        var box = normalize(message.box);
+        var box = normalize(message.box); //jshint ignore:line
 
         if(message.anonymous) // For printshop
             return 'ipp://localhost:631/classes/printshop';
@@ -69,10 +62,7 @@ function AgentClass() {
                 if(!message.id)
                     return;
 
-                return nodefn.call(SQS.sendMessage.bind(SQS), {
-                    QueueUrl: config.printsmart.awsQueues.updateJobStatus,
-                    MessageBody: JSON.stringify({ 'id': message.id, 'printerUri': message.printerUri, 'jobUri': jobUri })
-                });
+                return sqs.sendMessage(config.queues.updateJobStatus, { 'id': message.id, 'printerUri': message.printerUri, 'jobUri': jobUri });
 
             }).then(function () {
 
@@ -165,7 +155,6 @@ function prepare(inputPath, outputPath, message) {
 
         if(!message.anonymous && line=='showpage' && page==1) {
 
-
             line  = 'newpath\n';
 
             // TOP OF PAGE
@@ -186,8 +175,6 @@ function prepare(inputPath, outputPath, message) {
             line += '/Helvetica findfont 7 scalefont setfont\n';
             line += 'currentpagedevice /PageSize get aload pop exch pop 48 sub 190 exch moveto\n';
             line += '(SCBD PrintSmart - Copy printed ON-DEMAND) show\n';
-
-
 
             // TOP LEFT
 

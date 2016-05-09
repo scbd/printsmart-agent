@@ -1,67 +1,48 @@
-var AWS = require('aws-sdk');
-var config = require('./config');
 var when = require("when");
-var nodefn = require("when/node/function");
+var sqs  = require("./sqs");
 
 function WorkerClass() {
 
     var self = this;
 
-    var SQS = new AWS.SQS({
-        accessKeyId: config.awsAccessKeys.global.accessKeyId,
-        secretAccessKey: config.awsAccessKeys.global.secretAccessKey,
-        region: 'us-east-1',
-        apiVersion: '2012-11-05',
-    });
-
 	//============================================================
-	//
-	//
+    //
 	//============================================================
-	this.listen = function listen(queueUrl, callback) {
+	this.listen = function listen(queue, callback) {
 
-        console.log('info: pooling queue ' + queueUrl + '...');
+        console.log('info: pooling queue ' + queue + '...');
 
-        var options = {
-            QueueUrl: queueUrl,
-            MaxNumberOfMessages: 1,
-            VisibilityTimeout: 90,
-            WaitTimeSeconds: 20
-        };
+        sqs.receiveMessages(queue).then(function(messages) {
 
-		var messages = nodefn.call(SQS.receiveMessage.bind(SQS), options).then(function succeeded (data) {
+		    return when.map(messages, function (message) {
 
-			return (data && data.Messages) ? data.Messages : [];
-		});
+    			console.log('info: message received from queue ' + queue);
 
-		when.map(messages, function (message) {
+    			return when(callback(message), function succeeded () {
 
-			console.log('info: message received from queue ' + queueUrl);
+    				return sqs.deleteMessage(queue, message);
 
-			return when(callback(message), function succeeded () {
+    			}).then(function() {
 
-				return nodefn.call(SQS.deleteMessage.bind(SQS), { QueueUrl: options.QueueUrl, ReceiptHandle: message.ReceiptHandle });
+    				console.log('info: message successfully processed and removed from queue');
 
-			}).then(function onsuccess (data) {
+    			}).otherwise(function onerror (error) {
 
-				console.log('info: message successfully processed and removed from queue');
+    				console.error(error);
+    			});
+    		});
 
-			}).otherwise(function onerror (error) {
-
-				console.error(error);
-			});
-
-		}).otherwise(function onerror (error) {
+        }).catch(function onerror (error) {
 
             console.error(error);
 
-            return promise.delay(10000);
+            return when().delay(10000);
 
-        }).ensure(function () {
+        }).finally(function () {
 
-            setTimeout(function() { self.listen(queueUrl, callback); }, 1);
+            process.nextTick(function() { self.listen(queue, callback); });
         });
-	}
+	};
 }
 
 module.exports = exports = new WorkerClass();

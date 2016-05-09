@@ -17,13 +17,21 @@ nano config.json
 ```
 
 ```
+
+### Sample config file
+
+```javascript
 {
-	"awsAccessKeys": {
-		"global": {
-			"accessKeyId": "XXXXXXXXXX",
-			"secretAccessKey": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-		}
-	}
+    "aws": {
+        "accountId": "12345674869",
+        "accessKeyId": "SECRET",
+        "secretAccessKey": "SECRET"
+    },
+    "queues" : {
+        "print"           : "PrintSmart_print",
+        "reportJobStatus" : "PrintSmart_jobStatusReport",
+        "updateJobStatus" : "PrintSmart_updateJobStatus_{instanceId}"
+    }
 }
 ```
 
