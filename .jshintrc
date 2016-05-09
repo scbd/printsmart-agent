@@ -10,5 +10,6 @@
     "devel"    : true,
     "smarttabs": true,
     "trailing" : true,
+    "esnext"   : true,
     "predef"   : []
 }
