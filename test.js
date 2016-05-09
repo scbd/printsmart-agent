@@ -10,9 +10,9 @@ var message = {
     language: 'EN',
     name: 'Stephane Bilodeau',
     government: 'Canada',
-    tag: 'WG.1',
-    box: '0021',
-    printerUri : process.argv[2] || 'http://localhost:631/classes/default'
+    tag: '!!!TEST!!!',
+    box: 'TEST',
+    printerUri : process.argv[2] || 'ipp://localhost:631/classes/default'
 };
 
 when(agent.processMessage(message), function() {
