@@ -6,4 +6,5 @@ server/server-config-secret.js
 *.suo
 *.sln
 *.njsproj
+config.json
 .DS_Store
