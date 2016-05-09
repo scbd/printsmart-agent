@@ -32,6 +32,10 @@ nano config.json
         "reportJobStatus" : "PrintSmart_jobStatusReport",
         "updateJobStatus" : "PrintSmart_updateJobStatus_{instanceId}"
     },
+    "postscript" : {
+        "level" : 1,
+        "paper" : "letter"
+    },
     "printers" : {
         "ps1" : {
             "endpoint"    : "ipp://0.0.0.1/ipp",

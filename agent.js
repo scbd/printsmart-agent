@@ -109,14 +109,23 @@ function convertToPS(filePath, outputPath) {
 
     var deferred = when.defer();
 
-    var ls = processx.spawn('pdftops', ['-paper', 'letter', '-level1', filePath, outputPath]);
+    var params = [];
+
+    if(config.postscript) {
+        if(config.postscript.level) params = params.concat([`-level${config.postscript.level}`]);
+        if(config.postscript.paper) params = params.concat([`-paper`,config.postscript.paper]);
+    }
+
+    console.log(params);
+
+    var ls = processx.spawn('pdftops', params.concat([filePath, outputPath]));
 
     ls.stdout.on('data', function (data) { console.log('stdout: ' + data); });
     ls.stderr.on('data', function (data) { console.log('stderr: ' + data); });
 
     ls.on('close', function (code) {
 
-        if(code==0) deferred.resolve(outputPath);
+        if(code==0) deferred.resolve(outputPath); //jshint ignore:line
         else        deferred.reject(code);
     });
 
