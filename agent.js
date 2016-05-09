@@ -172,7 +172,7 @@ function prepare(inputPath, outputPath, message) {
 
             // NAME
             line += '/Helvetica-Bold findfont 12 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 20 sub 190 exch moveto\n';
+            line += 'currentpagedevice /PageSize get aload pop exch pop 22 sub 190 exch moveto\n';
             line += '('+escape(diacritics.remove(message.name||"Not Named"))+') show\n';
 
             // COUNTRY
