@@ -31,6 +31,30 @@ nano config.json
         "print"           : "PrintSmart_print",
         "reportJobStatus" : "PrintSmart_jobStatusReport",
         "updateJobStatus" : "PrintSmart_updateJobStatus_{instanceId}"
+    },
+    "printers" : {
+        "ps1" : {
+            "endpoint"    : "ipp://0.0.0.1/ipp",
+            "driver"      : "drv:///sample.drv/generic.ppd",
+            "description" : "PrintSmart",
+            "location"    : "Doc Distribution"
+        },
+        "ps2" : {
+            "endpoint"    : "ipp://0.0.0.2/ipp",
+            "driver"      : "drv:///sample.drv/generic.ppd",
+            "description" : "PrintSmart",
+            "location"    : "Doc Distribution"
+        },
+        "ps3" : {
+            "endpoint"    : "ipp://0.0.0.3/ipp",
+            "driver"      : "drv:///sample.drv/generic.ppd",
+            "description" : "PrintSmart-Backup",
+            "location"    : "Doc Distribution"
+        }
+    },
+    "classes" : {
+        "default"   : ["ps1", "ps2"],
+        "printshop" : ["ps1", "ps2"]
     }
 }
 ```

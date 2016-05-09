@@ -5,16 +5,20 @@ var job       = require('./job');
 var worker    = require('./worker');
 var config    = require('./config');
 var sqs       = require('./sqs');
+var printerInitializer = require('./printer-initializer');
 
 console.log('info: Starting PrintSmart Agent... (press ctrl-c to stop)');
 console.log('info: ------------------------------------------------------------');
 
+printerInitializer.init().then(function(){
 
-return when.all([
-    sqs.assertQueue(config.queues.print,           { VisibilityTimeout: "90", MessageRetentionPeriod: "1209600" }),
-    sqs.assertQueue(config.queues.reportJobStatus, { VisibilityTimeout: "90", MessageRetentionPeriod: "1209600" }),
-    sqs.assertQueue(config.queues.updateJobStatus, { VisibilityTimeout: "90", MessageRetentionPeriod: "1209600", DelaySeconds : "20" }),
-]).then(function(){
+    return when.all([
+        sqs.assertQueue(config.queues.print,           { VisibilityTimeout: "90", MessageRetentionPeriod: "1209600" }),
+        sqs.assertQueue(config.queues.reportJobStatus, { VisibilityTimeout: "90", MessageRetentionPeriod: "1209600" }),
+        sqs.assertQueue(config.queues.updateJobStatus, { VisibilityTimeout: "90", MessageRetentionPeriod: "1209600", DelaySeconds : "20" }),
+    ]);
+
+}).then(function(){
 
     worker.listen(config.queues.print, function (message) {
         return agent.processMessage(JSON.parse(message.Body));
