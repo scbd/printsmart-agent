@@ -1,10 +1,11 @@
 {
   "name": "printsmart-agent",
-  "version": "0.0.1",
-  "licenses": "MIT",
+  "version": "1.0.0",
+  "description" : "SCBD Print-on-Demand System. Send print jobs to printers",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/scbd/printsmart-agent"
+    "url": "https://github.com/scbd/printsmart-agent.git"
   },
   "dependencies": {
     "aws-sdk": "^2.0.0-rc.19",
