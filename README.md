@@ -1,3 +1,7 @@
+# SCBD PrintSmart
+
+SCBD PrintSmart Agent Sends Print-on-Demand request to venue PrintSmart-enabled printers.
+
 ### Build & Run
 
 Build
