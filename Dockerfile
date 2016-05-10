@@ -1,8 +1,11 @@
 FROM node:4
 
 # Install cups
-RUN apt-get update
-RUN apt-get install -y cups nano wget curl
+
+RUN apt-get update -qq && \
+    apt-get install -qq -y cups && \
+    apt-get clean -qq && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 WORKDIR /usr/src/app
 
@@ -11,9 +14,9 @@ COPY package.json .npmrc ./
 RUN npm install -q
 
 COPY . ./
-COPY cupsd.conf /etc/cups/cupsd.conf
+RUN  mv cupsd.conf /etc/cups/cupsd.conf
 
-### ENV CONFIG_FILE /config/config.json
+ENV CONFIG_FILE /config/config.json
 
 EXPOSE 631
 
