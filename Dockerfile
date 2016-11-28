@@ -1,4 +1,4 @@
-FROM node:4
+FROM node:6.9.1
 
 # Install cups
 
@@ -15,9 +15,12 @@ RUN npm install -q
 
 COPY . ./
 RUN  mv cupsd.conf /etc/cups/cupsd.conf
+RUN  mv docker-entrypoint.sh /
 
 ENV CONFIG_FILE /config/config.json
 
 EXPOSE 631
 
-CMD service cups start && node main
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+CMD ["node", "main"]

@@ -1,3 +1,7 @@
+process.on('SIGABRT', function() { console.log('Received SIGABRT. Exiting...'); process.exit(); });
+process.on('SIGINT',  function() { console.log('Received SIGINT. Exiting...');  process.exit(); });
+process.on('SIGTERM', function() { console.log('Received SIGTERM. Exiting...'); process.exit(); });
+
 require("console-stamp")(console, "HH:MM:ss.l");
 var when      = require('when');
 var agent     = require('./agent');
