@@ -7,6 +7,12 @@ RUN apt-get update -qq && \
     apt-get clean -qq && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Create a user `ps` with password `ps` for CUPS web admin interface
+
+RUN useradd ps && \
+    adduser ps lpadmin && \
+    echo "ps:ps" | chpasswd
+
 WORKDIR /usr/src/app
 
 COPY package.json .npmrc ./
