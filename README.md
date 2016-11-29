@@ -11,7 +11,7 @@ $ docker build -t printsmart-agent git@github.com:scbd/printsmart-agent.git
 
 Run (daemon)
 ```
-$ docker run -d --name printsmart -p 6631:631 -v /path/to/file/on/host/config.json:/config/config.json -e CONFIG_FILE=/config/config.json printsmart-agent
+docker run -d --name ps --restart always -e INSTANCE_ID=$(hostname) -v /path/to/config/config.json:/config/config.json -p 631:631 scbd/printsmart-agent
 ```
 
 Logs
@@ -69,7 +69,7 @@ $ docker logs -f printsmart
 ssh -A -L 21631:localhost:631 -o "ProxyCommand=ssh -A user@public.server netcat localhost 2122" psu@localhost -p 2122 $@
 ```
 
-### Uselfull CUPS Command lines
+### Usefull CUPS Command lines
 
 List drivers
 ```
