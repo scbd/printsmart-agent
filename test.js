@@ -12,8 +12,10 @@ var message = {
     government: 'Canada',
     tag: '!!!TEST!!!',
     box: 'TEST',
-    printerUri : process.argv[2] || 'ipp://localhost:631/classes/default'
+    printerUri : process.argv[2]
 };
+
+
 
 when(agent.processMessage(message), function() {
     console.log('DONE');

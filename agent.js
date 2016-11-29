@@ -22,9 +22,17 @@ function AgentClass() {
         var box = normalize(message.box); //jshint ignore:line
 
         if(message.anonymous) // For printshop
-            return 'ipp://localhost:631/classes/printshop';
+            return 'ipp://localhost/classes/printshop';
 
-        return 'ipp://localhost:631/classes/default';
+        if(message.government) {
+
+            var gov = message.government.toLowerCase();
+
+            if(gov <= "libya") return 'ipp://localhost/classes/countriesAL';
+            else               return 'ipp://localhost/classes/countriesLZ';
+        }
+
+        return 'ipp://localhost/classes/observers';
     }
 
     //============================================================
