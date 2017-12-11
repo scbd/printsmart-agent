@@ -11,7 +11,7 @@ $ docker build -t printsmart-agent git@github.com:scbd/printsmart-agent.git
 
 Run (daemon)
 ```
-docker run -d --name ps --restart always -e INSTANCE_ID=$(hostname) -v /path/to/config/config.json:/config/config.json -p 631:631 scbd/printsmart-agent
+$ docker run -d --name ps --restart always -e INSTANCE_ID=$(hostname) -v /path/to/config/config.json:/config/config.json -p 631:631 scbd/printsmart-agent
 ```
 
 Logs
@@ -66,10 +66,34 @@ $ docker logs -f printsmart
 
 ### SSH Reverse tunnel connection
 ```
-ssh -A -L 21631:localhost:631 -o "ProxyCommand=ssh -A user@public.server netcat localhost 2122" psu@localhost -p 2122 $@
+$ ssh -A -L 21631:localhost:631 -o "ProxyCommand=ssh -A user@public.server netcat localhost 2122" ubuntu@localhost -p 2122 $@
+```
+auto ssh
+```
+$ sudo nano /etc/systemd/system/autossh-tunnel.service
+```
+autossh-tunnel.service
+```
+[Unit]
+Description=SSH reverse tunnel service
+After=network.target
+
+[Service]
+Environment="AUTOSSH_GATETIME=0"
+ExecStart=/usr/bin/autossh -M 0 -N -i /home/ubuntu/.ssh/id_rsa -o StrictHostKeyChecking=no -R 2122:localhost:22 master@69.90.183.252 -v
+
+[Install]
+WantedBy=multi-user.target
 ```
 
-### Usefull CUPS Command lines
+```
+$ sudo systemctl daemon-reload
+$ sudo systemctl start autossh-tunnel.service
+$ sudo systemctl enable autossh-tunnel.service
+$ sudo systemctl status autossh-tunnel
+```
+
+### Useful CUPS Command lines
 
 List drivers
 ```
@@ -78,7 +102,7 @@ $ lpinfo -m
 
 List printer
 ```
-lpstat -p
+$ lpstat -p
 ```
 
 Add printer
@@ -115,4 +139,35 @@ $ cupsaccept default
 Remove printers from a class
 ```
 $ lpadmin -p ps3 -r default
+```
+
+# Setup server (ubuntu 16.04)
+
+No password SUDO
+```
+$ visudo
+  %sudo   ALL=(ALL:ALL) NOPASSWD: ALL
+```
+
+mutlicast DNS, autossh etc
+```
+$ sudo apt-get update
+$ sudo apt-get install libnss-mdns autossh apt-transport-https ca-certificates curl software-properties-common
+```
+
+
+No password and pubkey for ssh
+```
+$ sudo nano /etc/ssh/sshd_config
+  PubkeyAuthentication yes
+  PasswordAuthentication no
+```
+
+Docker
+```
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+$ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+$ sudo apt-get update
+$ sudo apt-get install docker-ce
+
 ```
