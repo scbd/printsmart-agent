@@ -16,7 +16,7 @@ $ docker run -d --name ps --restart always -e INSTANCE_ID=$(hostname) -v /path/t
 
 Logs
 ```
-$ docker logs -f printsmart
+$ docker logs -f ps
 ```
 
 ### Sample config file
