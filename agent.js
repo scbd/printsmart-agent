@@ -154,6 +154,8 @@ function prepare(inputPath, outputPath, message) {
 
     wStream.write('@PJL SET FINISH = LEFT1POINT\n', 'UTF-8');
 
+    var topOffet = 0;
+
     var transform = function (line) {
 
         // if(line=='%%EndSetup') {
@@ -167,6 +169,8 @@ function prepare(inputPath, outputPath, message) {
         //     line += '%%EndSetup';
         // }
 
+        if(/^%%DocumentMedia: A4/.test(line)) topOffet = 50;
+
         if(line=='%%Page: 1 1') page = 1;
         if(line=='%%Page: 2 2') page = 2;
 
@@ -178,19 +182,19 @@ function prepare(inputPath, outputPath, message) {
 
             // NAME
             line += '/Helvetica-Bold findfont 12 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 22 sub 190 exch moveto\n';
+            line += `currentpagedevice /PageSize get aload pop exch pop ${topOffet+22} sub 190 exch moveto\n`;
             line += '('+escape(diacritics.remove(message.name||"Not Named"))+') show\n';
 
             // COUNTRY
 
             if(message.government) {
                 line += '/Helvetica-Bold findfont 10 scalefont setfont\n';
-                line += 'currentpagedevice /PageSize get aload pop exch pop 36 sub 190 exch moveto\n';
+                line += `currentpagedevice /PageSize get aload pop exch pop ${topOffet+36} sub 190 exch moveto\n`;
                 line += '('+escape(diacritics.remove(message.government))+') show\n';
             }
 
             line += '/Helvetica findfont 7 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 48 sub 190 exch moveto\n';
+            line += `currentpagedevice /PageSize get aload pop exch pop ${topOffet+48} sub 190 exch moveto\n`;
             line += '(SCBD PrintSmart - Copy printed ON-DEMAND) show\n';
 
             // TOP LEFT
@@ -198,7 +202,7 @@ function prepare(inputPath, outputPath, message) {
             var box = [message.box, initials(message.name||"")].join(' - ');
 
             line += '/Helvetica-Bold findfont 24 scalefont setfont\n';
-            line += 'currentpagedevice /PageSize get aload pop exch pop 30 sub 40 exch moveto\n';
+            line += `currentpagedevice /PageSize get aload pop exch pop ${topOffet+30} sub 40 exch moveto\n`;
             line += '('+escape(diacritics.remove(box||"NOT-SET"))+') show\n';
 
             // TOP RIGHT
@@ -207,7 +211,7 @@ function prepare(inputPath, outputPath, message) {
 
             if(message.tag) {
                 line += '/Helvetica-Bold findfont 24 scalefont setfont\n';
-                line += 'currentpagedevice /PageSize get aload pop exch pop 30 sub 472 exch moveto\n';
+                line += `currentpagedevice /PageSize get aload pop exch pop ${topOffet+30} sub 472 exch moveto\n`;
                 line += '('+escape(diacritics.remove(tag))+') true charpath 1 setlinewidth 0.0 setgray stroke\n';
             }
 
