@@ -80,7 +80,7 @@ After=network.target
 
 [Service]
 Environment="AUTOSSH_GATETIME=0"
-ExecStart=/usr/bin/autossh -M 0 -N -i /home/ubuntu/.ssh/id_rsa -o StrictHostKeyChecking=no -R 2122:localhost:22 master@69.90.183.252 -v
+ExecStart=/usr/bin/autossh -M 0 -N -i /home/ubuntu/.ssh/id_rsa -o StrictHostKeyChecking=no -R 2122:localhost:22 user@public.server -v
 
 [Install]
 WantedBy=multi-user.target
