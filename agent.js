@@ -24,6 +24,9 @@ function AgentClass() {
         if(message.anonymous) // For printshop
             return 'ipp://localhost/classes/printshop';
 
+        return 'ipp://localhost/classes/default';
+
+        /*
         if(message.government) {
 
             var gov = message.government.toLowerCase();
@@ -33,6 +36,7 @@ function AgentClass() {
         }
 
         return 'ipp://localhost/classes/observers';
+        */
     }
 
     //============================================================
