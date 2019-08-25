@@ -80,7 +80,7 @@ After=network.target
 
 [Service]
 Environment="AUTOSSH_GATETIME=0"
-ExecStart=/usr/bin/autossh -M 0 -N -i /home/ubuntu/.ssh/id_rsa -o StrictHostKeyChecking=no -R 2122:localhost:22 user@public.server -v
+ExecStart=/usr/bin/autossh -M 0 -N -i /home/ubuntu/.ssh/id_rsa -o ServerAliveInterval=15 -o ServerAliveCountMax=2 -o StrictHostKeyChecking=no -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no -R 2122:localhost:22 user@public.server -v
 
 [Install]
 WantedBy=multi-user.target
@@ -93,6 +93,11 @@ $ sudo systemctl enable autossh-tunnel.service
 $ sudo systemctl status autossh-tunnel
 ```
 
+_server_
+add to /etc/ssh/sshd_config
+```
+ClientAliveInterval 15
+```
 ### Useful CUPS Command lines
 
 List drivers
